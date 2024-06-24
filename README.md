@@ -8,8 +8,6 @@ This class performs the connection with the DB via PDO and executes the SELECT/I
 - [Installation](#installation)
 - [Configuration](#configuration)
 - [Usage](#usage)
-- [Constructor](#constructor)
-- [Destructor](#destructor)
 - [getQuery](#getquery)
 - [execQuery](#execquery)
 - [Transactions](#transactions)
@@ -18,58 +16,39 @@ This class performs the connection with the DB via PDO and executes the SELECT/I
 
 ## Installation
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/your-username/your-repository.git
-   ```
-
-2. Navigate to the project directory:
-   ```bash
-   cd your-repository
-   ```
-
-3. Ensure you have PHP installed and configured properly.
+Simply copy all the files to a directory in your project (for example, "/include").
 
 ## Configuration
 
-Create a `config.php` file in the project root with your database connection parameters and other settings:
+Edit the `config.php` and add your database connection parameters. You can also enable or disable the query debugging option.
 
 ```php
 <?php
 // config.php
 
 return [
-    'database' => [
-        'servername' => 'your_db_server',
-        'dbname' => 'your_db_name',
-        'username' => 'your_db_username',
-        'password' => 'your_db_password'
-    ],
-    'debugQuery' => true, // Set to true to enable query debugging
+  'database' => [
+    'servername' => 'your_db_server',
+    'dbname' => 'your_db_name',
+    'username' => 'your_db_username',
+    'password' => 'your_db_password'
+  ],
+  'debugQuery' => true, // Set to true to enable query debugging
 ];
+
 ?>
 ```
 
 ## Usage
 
+### Initialization
+
 Include the `dbHandler` class in your project and instantiate it as needed.
-
-### Constructor
-
-The constructor establishes a connection to the database using the parameters specified in `config.php`.
 
 ```php
 require 'path/to/dbHandler.php';
 
 $db = new dbHandler();
-```
-
-### Destructor
-
-The destructor closes the database connection at the end of the script.
-
-```php
-unset($db); // This will invoke the __destruct method
 ```
 
 ### getQuery
@@ -87,9 +66,13 @@ Executes a SQL SELECT statement and returns the results.
 #### Example
 
 ```php
-$query = "SELECT * FROM users WHERE id = :id";
-$data = [':id' => 1];
+$query = 'SELECT * FROM users WHERE name = :name AND surname = :surname';
+$data = array(
+  ':name' => 'Tony',
+  ':surname' => 'Stark'
+);
 $result = $db->getQuery($query, $data, true);
+
 print_r($result);
 ```
 
@@ -107,51 +90,52 @@ Executes a SQL INSERT, UPDATE, or DELETE statement and returns the result.
 #### Example
 
 ```php
-$query = "INSERT INTO users (name, email) VALUES (:name, :email)";
-$data = [':name' => 'John Doe', ':email' => 'john.doe@example.com'];
-$insertId = $db->execQuery($query, $data);
-echo $insertId;
+$query = 'INSERT INTO users (name, email) VALUES (:name, :email)';
+$data = array(
+  ':name' => 'Tony Stark',
+  ':email' => 'tony.stark@example.com'
+);
+$insertID = $db->execQuery($query, $data);
+
+echo $insertID;
 ```
 
 ### Transactions
 
 Handle transactions composed of multiple queries.
 
-#### beginTransaction
-
-Starts a transaction.
+#### Example
 
 ```php
-$db->beginTransaction();
-```
+try {
 
-#### commit
+  $db->beginTransaction(); // Starts a transaction.
 
-Commits the transaction.
+  $queryInsert = 'INSERT INTO payments (source, amount, user_id) VALUES (:source, :amount, :user_id)';
+  $dataInsert = array(
+    ':source' => 'Credit Card',
+    ':amount' => 300,
+    ':user_id' => 3
+  );
+  $insertResultID = $this->db->execQuery($queryInsert, $dataInsert);
 
-```php
-$db->commit();
-```
+  $queryUpdate = 'UPDATE users SET status = :status, payment_id = :payment_id WHERE user_id = :user_id';
+  $dataUpdate = array(
+    ':status' => 'active',
+    ':payment_id' => $insertResultID,
+    ':user_id' => 3
+  );
+  $this->db->execQuery($queryUpdate, $dataUpdate);
 
-#### inTransaction
+  $db->commit(); // Commits the transaction.
 
-Checks if a transaction is still active.
+} catch (\Exception $e) {
 
-#### Returns
-- `bool`: True if a transaction is active, false otherwise.
+  if ($db->inTransaction()) { //Checks if a transaction is still active.
+    $db->rollBack(); // Rolls back the transaction.
+  }
 
-```php
-if ($db->inTransaction()) {
-    echo "Transaction is active";
 }
-```
-
-#### rollBack
-
-Rolls back the transaction.
-
-```php
-$db->rollBack();
 ```
 
 ### logQuery
@@ -168,9 +152,13 @@ Logs a query with bound parameters for debugging purposes.
 #### Example
 
 ```php
-$query = "SELECT * FROM users WHERE id = :id";
-$data = [':id' => 1];
+$query = 'SELECT * FROM users WHERE name = :name AND surname = :surname';
+$data = array(
+  ':name' => 'Tony',
+  ':surname' => 'Stark'
+);
 $loggedQuery = $db->logQuery($query, $data);
+
 echo $loggedQuery;
 ```
 
