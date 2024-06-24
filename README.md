@@ -1,7 +1,7 @@
 
 # dbHandler Class
 
-This class performs the connection with the DB via PDO and executes the SELECT/INSERT/UPDATE/DELETE queries and transactions.
+This class manages the database connection using PDO, executes SQL queries (SELECT, INSERT, UPDATE, DELETE), handles transactions, and cleans input data to enhance security.
 
 ## Table of Contents
 
