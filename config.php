@@ -8,5 +8,5 @@ return [
     'username' => '',
     'password' => ''
   ],
-  'debugQuery' => true, // Imposta qui il valore di debugQuery
+  'debugQuery' => true, // Option to enable or disable the query debugging
 ];
