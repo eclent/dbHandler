@@ -157,8 +157,13 @@ $data = array(
   ':name' => 'Tony',
   ':surname' => 'Stark'
 );
-$loggedQuery = $db->logQuery($query, $data);
 
+// Execute the SELECT query and print the result data
+$result = $db->getQuery($query, $data, true);
+print_r($result);
+
+Build the full query with bound parameters and print it for debugging purposes
+$loggedQuery = $db->logQuery($query, $data);
 echo $loggedQuery;
 ```
 
