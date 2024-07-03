@@ -162,7 +162,7 @@ $data = array(
 $result = $db->getQuery($query, $data, true);
 print_r($result);
 
-Build the full query with bound parameters and print it for debugging purposes
+// Build the full query with bound parameters and print it for debugging purposes
 $loggedQuery = $db->logQuery($query, $data);
 echo $loggedQuery;
 ```
